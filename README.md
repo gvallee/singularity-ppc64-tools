@@ -11,6 +11,8 @@ With the venue of PPC64 platforms such as Summit at ORNL, the interest for runni
 
 If you wonder why i chose Singularity, it is simple: it is, i think, the best container technology that does require root access on the computing system. However, it is not without additional challenges that will be covered later in this document and by the tools in this repository.
 
+This repostory therefore gathers all my notes, thoughts and scripts i used to achieve my goal of running Singularity containers on a PPC64-based high-performance computing platform.
+
 # Architecture
 
 ## Image creation
