@@ -1,0 +1,40 @@
+BootStrap: library
+From: ubuntu:16.04
+
+%post
+    apt-get -y update
+    apt-get -y install wget gcc tar bzip2  g++ gfortran libgomp1 make git sudo vim
+
+    # Get all the software before compiling
+    mkdir -p /tmp/ompi
+    cd /tmp/ompi
+    rm -f openmpi-4.0.0.tar.bz2
+    wget https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-4.0.0.tar.bz2
+
+    mkdir -p /tmp/mm
+    cd /tmp/mm
+    rm -rf openmp-gpu-offload
+    git clone https://code.ornl.gov/gvh/openmp-gpu-offload.git
+
+    # Install Open MPI
+    cd /tmp/ompi
+    tar xjf openmpi-4.0.0.tar.bz2
+    cd openmpi-4.0.0
+    ./configure
+    make -j8 install
+
+    # Install the matrix multiply benchmark
+    export OMPI_CC=gcc
+    mkdir -p /tmp/mm
+    cd /tmp/mm/openmp-gpu-offload/src
+    LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH make V=1 benchmark1
+    LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH mpicc -fopenmp benchmark4.c -o benchmark4
+    LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH mpicc -fopenmp benchmark5.c -o benchmark5
+    LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH mpicc -fopenmp benchmark6.c -o benchmark6
+
+%environment
+    export LC_ALL=C
+    export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+
+%labels
+    Author gvallee
